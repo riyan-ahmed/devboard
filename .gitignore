@@ -1,0 +1,19 @@
+# node
+node_modules/
+dist/
+.vite/
+
+# go
+/backend/devboard-backend
+
+# env: keep .env local; commit .env.example instead
+.env
+
+# terraform (for later phases)
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# misc
+.DS_Store
+*.local
