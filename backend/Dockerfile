@@ -6,7 +6,7 @@ WORKDIR /app
 COPY go.mod go.sum .
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build idflags="-s -w" -o devboard-backend .
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o devboard-backend .
 
 #----------- Stage 2: Runner -----------------
 FROM alpine:3.22
