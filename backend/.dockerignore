@@ -1,0 +1,18 @@
+# Tests aren't needed to build or run the app
+*_test.go
+
+# Docker's own files don't belong inside the image
+Dockerfile
+.dockerignore
+
+# A binary built locally on the Mac (wrong OS for the container anyway)
+devboard-backend
+
+# Secrets must never end up in an image
+.env
+.env.*
+
+# Editor and OS clutter
+.DS_Store
+.vscode/
+.idea/

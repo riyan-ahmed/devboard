@@ -1,0 +1,24 @@
+# Dependencies: huge, built for macOS, and npm ci makes a fresh copy inside the image
+node_modules
+
+# Old build output: the image builds its own dist/
+dist
+
+# Secrets must never end up in an image
+.env
+.env.*
+
+# Docker's own files don't belong inside the image
+Dockerfile
+.dockerignore
+
+# Tests and lint config aren't needed to build the site
+**/*.test.jsx
+src/test
+eslint.config.js
+
+# Editor and OS clutter
+.DS_Store
+.vscode/
+.idea/
+*.log
