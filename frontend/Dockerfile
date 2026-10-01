@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build             
 
 # ---- Stage 2: serve them ----
-FROM nginxinc/nginx-unprivileged:1-alpine3.24
+FROM nginxinc/nginx-unprivileged:1.31-alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 ENV BACKEND_URL=backend:8080
