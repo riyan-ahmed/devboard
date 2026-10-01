@@ -9,7 +9,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o devboard-backend .
 
 #----------- Stage 2: Runner -----------------
-FROM alpine:3.22
+FROM alpine:3.24
 
 COPY --from=builder /app/devboard-backend /devboard-backend
 
