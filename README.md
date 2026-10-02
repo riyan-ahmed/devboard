@@ -74,7 +74,7 @@ cd frontend && npm ci && npm run lint && npm test
 | # | Phase | Status | Write-up |
 |---|---|---|---|
 | 1 | Docker: multi-stage images + Compose | ✅ | [docs/phase-1-docker.md](docs/phase-1-docker.md) |
-| 2 | GitHub Actions: CI, security scans, push to Docker Hub | ✅ | |
+| 2 | GitHub Actions: CI, security scans, push to Docker Hub | ✅ | [docs/phase-2-ci.md](docs/phase-2-ci.md) |
 | 3 | Kubernetes on kind | ⬜ | |
 | 4 | Terraform: VPC + EKS on AWS | ⬜ | |
 | 5 | Ansible: ops server configuration | ⬜ | |
@@ -90,3 +90,11 @@ Full plan and decisions: [ROADMAP.md](ROADMAP.md).
   vulnerable Go dependencies (was 9 critical / 9 high)
 - Both containers run as **non-root**
 - Healthcheck-based start-up order; only one port exposed
+
+### Phase 2 highlights
+
+- Every PR runs tests, Dockerfile linting and a Trivy vulnerability scan (~75 s)
+- `main` is protected: a PR can only merge when every check passes
+- Merges to `main` publish SHA-tagged images to Docker Hub
+- CI caught a new HIGH CVE in the nginx base image on day one; patched in the image
+- Dependabot keeps Go, npm, Docker base images and Actions up to date
