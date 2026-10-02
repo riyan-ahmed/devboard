@@ -1,5 +1,7 @@
 # DevBoard
 
+[![CI](https://github.com/riyan-ahmed/devboard/actions/workflows/ci.yml/badge.svg)](https://github.com/riyan-ahmed/devboard/actions/workflows/ci.yml)
+
 A small project and task board (React + Go + Postgres) that I'm taking from
 "runs on my laptop" to a production-shaped platform on AWS, one DevOps layer at
 a time.
