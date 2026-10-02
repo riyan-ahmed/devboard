@@ -22,6 +22,12 @@ RUN npm run build
 # ---- Stage 2: serve them ----
 FROM nginxinc/nginx-unprivileged:1.31-alpine
 
+USER root
+
+RUN apk upgrade --no-cache pcre2
+
+USER 101
+
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
