@@ -15,7 +15,7 @@ COPY --from=builder /app/devboard-backend /devboard-backend
 
 RUN adduser -D -u 10001 app
 
-USER app
+USER 10001:10001
 
 EXPOSE 8080
 

@@ -26,7 +26,7 @@ USER root
 
 RUN apk upgrade --no-cache pcre2
 
-USER 101
+USER 0
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
