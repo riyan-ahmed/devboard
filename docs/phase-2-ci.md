@@ -125,81 +125,25 @@ Docker base images (`/backend`, `/frontend`) and GitHub Actions (`/`).
 
 ## My notes
 
-### Result
-
-Every pull request runs four checks in parallel stages (about 75 seconds in
-total): backend tests, frontend tests, and a lint + build + vulnerability scan
-for each image. Merging to `main` publishes both images to Docker Hub
-(`riyan0/devboard-backend`, `riyan0/devboard-frontend`), tagged with the commit
-SHA. `main` is protected, so nothing can be merged unless every check passes.
-
-```
-pull request ─▶ backend  (go vet, go test)     ─┐
-             └▶ frontend (npm ci, lint, test)   ─┴▶ images [backend, frontend]
-                                                    hadolint → build → Trivy scan
-                                                    └▶ main only: push :sha-xxxxxxx + :latest
-```
-
-### Decisions
+**Decisions**
 
 | Choice | What I picked | Why | Alternative I rejected |
 |---|---|---|---|
-| Pipeline shape | Test jobs first, then image jobs with `needs:` | No point building images if the tests fail; test jobs run in parallel | One long job: slower, and one failure hides the others |
-| One job for both images | A `matrix` over `[backend, frontend]` with `fail-fast: false` | One definition instead of two copies; one image failing still lets the other finish, so I see every problem in one run | Two copy-pasted jobs |
-| Go version in CI | `go-version-file: backend/go.mod` | One source of truth; CI can't drift from the code | Hard-coding a version (I first wrote 1.21, which couldn't build the 1.26 module) |
-| Dependency caching | `setup-go` / `setup-node` cache keyed on `go.sum` / `package-lock.json`; Docker layers in the GitHub Actions cache | Faster runs; the cache refreshes automatically when the lockfile changes | No caching: every run downloads everything again |
-| Dockerfile linting | hadolint, failing on any finding | Catches Dockerfile mistakes before they ship; it found two real issues | Lowering the threshold to make it pass |
-| Vulnerability scanner | Trivy: fail on fixable CRITICAL/HIGH (`ignore-unfixed: true`) | Blocks what I can fix; doesn't block every merge on CVEs nobody can fix yet | Failing on everything (blocks all work) or reporting only (nothing enforced) |
-| When to push images | Only on push to `main` (`if:` on the login and push steps) | PRs are untested code and shouldn't get registry credentials or publish anything | Pushing from every branch |
-| Image tags | `sha-<commit>` plus `latest` | The SHA tag says exactly which code is running and makes rollbacks precise; ArgoCD will deploy by SHA in Phase 7 | `latest` only: you can't tell what's deployed |
-| Registry credentials | Docker Hub **access token** in GitHub encrypted secrets | Limited to push/pull, revocable on its own, masked in logs | My account password |
-| Branch protection | Ruleset on `main`: PR required, all four checks required, no force pushes, no deletion, 0 approvals | Turns CI from a warning into a gate. 0 approvals because I work alone and can't approve my own PRs | No protection: red PRs could still be merged |
-| Dependency updates | Dependabot weekly for Go modules, npm (minor/patch grouped), Docker base images and GitHub Actions | Updates arrive as PRs and go through the same CI; would have caught the 9 Go CVEs and the old nginx automatically | Manual upgrades when I remember |
+| Scanner | | | |
+| Image tags | | | |
+| When to push | | | |
 
-### Numbers
+**Numbers**
 
 | Metric | Value |
 |---|---|
-| Full pipeline on a pull request | ~75 s |
-| backend tests / frontend tests | 19 s / 13 s |
-| images: backend / frontend (lint, build, scan) | 24 s / 48 s |
-| Real problems CI caught on its first day | 3 (below) |
+| Pipeline time (first run) | |
+| Pipeline time (with caching) | |
 
-### What broke and how I fixed it
+**What broke and how I fixed it**
 
-- **hadolint DL3021.** `COPY go.mod go.sum .` has several sources, so the
-  destination must end in `/`. Docker accepted it, hadolint didn't. Fixed to `./`.
-- **hadolint DL3066: user names instead of numbers.** `USER app` and
-  `USER root` became `USER 10001:10001` and `USER 0`. This matters for
-  Kubernetes: `runAsNonRoot` can only verify a numeric user, so the named
-  version would have been rejected in Phase 3.
-- **A new HIGH CVE after my Phase 1 scan.** Trivy failed the frontend on
-  CVE-2026-103111 in `pcre2` (10.48, the regex library nginx uses). Alpine had
-  released 10.49, but the `nginx-unprivileged:1.31-alpine` image hadn't been
-  rebuilt yet. I upgraded that one package in the final stage
-  (`USER 0` → `apk upgrade --no-cache pcre2` → `USER 101`) with a comment to
-  remove it once the base image includes the fix. New CVEs appear every day,
-  which is why scanning belongs in CI and not only on a laptop.
-- **Workflow structure.** My first workflow had `jobs:` inside the trigger
-  section, so GitHub saw no jobs. I now run `actionlint` before every commit,
-  like `docker compose config` in Phase 1.
-- **Merge conflict after a squash merge.** Squash-merging created a new commit
-  on `main` with the same content as my branch's original commit, so Git saw
-  two different commits that both created `ci.yml`. Fixed with
-  `git rebase --onto origin/main <old commit>` and `git push --force-with-lease`.
-  Since then I start every new piece of work from a fresh `main`.
-- **GitHub CLI couldn't open a PR.** Its token lacked the pull-request
-  permission: least privilege working as intended. Opened the PR in the browser.
+-
 
-### What I'd change in a real production setup
+**What I'd change in a real production setup**
 
-- **Pin actions to commit SHAs** instead of version tags, so a compromised
-  action tag can't change what runs in my pipeline (supply-chain risk).
-- **Sign images and generate an SBOM** (cosign, `provenance`/`sbom` in
-  build-push-action), and verify signatures before deploying.
-- **Multi-arch images** (amd64 + arm64): needed for EKS in Phase 4.
-- **A Compose smoke test in CI**: start the stack and call `/api/projects`, to
-  prove the images work together, not just build.
-- **Short-lived credentials** (OIDC) instead of a long-lived Docker Hub token,
-  once pushing to a registry that supports it (e.g. Amazon ECR).
-- **Require at least one reviewer** on a real team.
+-
