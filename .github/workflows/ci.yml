@@ -55,5 +55,39 @@ jobs:
       - name: Test
         run: npm test
           
+  images:
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backend, frontend]
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Lint Dockerfile
+      uses: hadolint/hadolint-action@v3.5.0
+      with:
+        dockerfile: ${{ matrix.service }}/Dockerfile
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Build image
+      uses: docker/build-push-action@v7
+      with:
+        context: ${{ matrix.service }}
+        load: true
+        tags: devboard-${{ matrix.service }}:ci
+        cache-from: type=gha,scope=${{ matrix.service }}
+        cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+    - name: Scan image for vulnerabilities
+      uses: aquasecurity/trivy-action@v0.36.0
+      with:
+        image-ref: devboard-${{ matrix.service }}:ci
+        severity: CRITICAL,HIGH
+        ignore-unfixed: true
+        exit-code: "1"
 
 
