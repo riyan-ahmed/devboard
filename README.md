@@ -74,7 +74,7 @@ cd frontend && npm ci && npm run lint && npm test
 | # | Phase | Status | Write-up |
 |---|---|---|---|
 | 1 | Docker: multi-stage images + Compose | ✅ | [docs/phase-1-docker.md](docs/phase-1-docker.md) |
-| 2 | GitHub Actions: CI, security scans, push to Docker Hub | ⬜ | |
+| 2 | GitHub Actions: CI, security scans, push to Docker Hub | ✅ | |
 | 3 | Kubernetes on kind | ⬜ | |
 | 4 | Terraform: VPC + EKS on AWS | ⬜ | |
 | 5 | Ansible: ops server configuration | ⬜ | |
