@@ -6,8 +6,8 @@ One branch and one pull request per phase. Each phase is finished when its
 | # | Phase | Runs on | Branch | Status |
 |---|---|---|---|---|
 | 0 | Starter: app code only | laptop | `main` | ✅ |
-| 1 | Docker: images + Compose | laptop | `phase-1-docker` | ⬜ |
-| 2 | GitHub Actions: CI, security scans, push to Docker Hub | GitHub | `phase-2-ci` | ⬜ |
+| 1 | Docker: images + Compose | laptop | `phase-1-docker` | ✅ |
+| 2 | GitHub Actions: CI, security scans, push to Docker Hub | GitHub | `phase-2-ci` | ✅ |
 | 3 | Kubernetes: raw manifests | kind (local) | `phase-3-k8s` | ⬜ |
 | 3b | AI service: Python + small Ollama model | kind (local) | `phase-3b-ai` | ⬜ |
 | 4 | Terraform: VPC + EKS + remote state | AWS `eu-west-2` | `phase-4-terraform` | ⬜ |
