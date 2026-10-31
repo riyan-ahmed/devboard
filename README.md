@@ -2,14 +2,10 @@
 
 [![CI](https://github.com/riyan-ahmed/devboard/actions/workflows/ci.yml/badge.svg)](https://github.com/riyan-ahmed/devboard/actions/workflows/ci.yml)
 
-A small project and task board (React + Go + Postgres) that I'm taking from
-"runs on my laptop" to a production-shaped platform on AWS, one DevOps layer at
-a time.
+A React, Go and PostgreSQL teaching application that I'm extending with practical DevOps platform engineering. Docker and CI/CD phases are implemented; AWS, Kubernetes and GitOps remain on the roadmap.
 
 > Based on the DevBoard teaching app by Shubham Londhe (TrainWithShubham).
-> The application code comes from there; the platform work in this repo
-> (containers, CI/CD, Kubernetes, infrastructure, observability and GitOps) is
-> my own, with the decisions and trade-offs written up in [`docs/`](docs/).
+> The original application code comes from the teaching project. My completed work in this repository focuses on containerisation, Docker image hardening, automated tests, CI/CD and security scanning. Kubernetes, infrastructure as code, observability and GitOps are planned phases, not completed features. Implementation decisions are documented in [`docs/`](docs/).
 
 ## Architecture
 
