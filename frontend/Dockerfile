@@ -24,7 +24,7 @@ FROM nginxinc/nginx-unprivileged:1.31-alpine
 
 USER 0
 
-RUN apk upgrade --no-cache pcre2
+RUN apk upgrade --no-cache pcre2 brotli-libs curl libcurl
 
 USER 101
 
